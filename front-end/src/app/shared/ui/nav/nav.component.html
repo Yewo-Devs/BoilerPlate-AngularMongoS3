@@ -1,0 +1,229 @@
+<header class="relative z-10 py-4 md:py-6" x-data="{expanded: false}">
+  <div class="container px-4 mx-auto sm:px-6 lg:px-8">
+    <div class="relative flex items-center justify-between">
+      <div class="flex-shrink-0">
+        <a
+          routerLink="/"
+          title=""
+          class="flex rounded outline-none focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+        >
+          <img
+            loading="lazy"
+            class="w-auto h-8"
+            src="../../../../assets/images/yourlogo.svg"
+            alt=""
+          />
+        </a>
+      </div>
+
+      <!--Hamburger-->
+      <div *ngIf="!profile" class="flex md:hidden">
+        <button
+          type="button"
+          class="text-gray-900"
+          (click)="expanded = !expanded"
+        >
+          <span *ngIf="!expanded" aria-hidden="true">
+            <svg
+              class="w-7 h-7"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </span>
+
+          <span *ngIf="expanded" aria-hidden="true">
+            <svg
+              class="w-7 h-7"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+
+      <!--Profile-->
+      <div *ngIf="profile" class="flex md:hidden">
+        <button
+          type="button"
+          class="bg-gray-200 text-gray-600 w-10 h-10 rounded-md"
+          (click)="expanded = !expanded"
+        >
+          <span *ngIf="!profile.photoUrl" aria-hidden="true">
+            <i class="pi pi-user"></i>
+          </span>
+
+          <span *ngIf="profile.photoUrl" aria-hidden="true">
+            <img
+              loading="lazy"
+              src="{{ profile.photoUrl }}"
+              class="rounded-md"
+            />
+          </span>
+        </button>
+      </div>
+
+      <div
+        class="hidden md:flex md:items-center md:justify-center md:space-x-10 md:absolute md:inset-y-0 md:left-1/2 md:-translate-x-1/2 lg:space-x-16"
+      >
+        <a
+          *ngIf="profile"
+          routerLink="/dashboard"
+          class="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+        >
+          Dashboard
+        </a>
+
+        <a
+          routerLink="/"
+          fragment="features"
+          class="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+        >
+          Features
+        </a>
+
+        <a
+          routerLink="/pricing"
+          title=""
+          class="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+        >
+          Pricing
+        </a>
+
+        <a
+          routerLink="/support"
+          title=""
+          class="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+        >
+          Support
+        </a>
+      </div>
+
+      <!--Not Logged In Desktop-->
+      <div *ngIf="!profile" class="hidden md:flex items-center gap-10">
+        <a
+          routerLink="/sign-in"
+          class="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+        >
+          Login
+        </a>
+
+        <a
+          routerLink="/sign-up"
+          class="inline-flex items-center justify-center px-6 py-3 text-base font-bold leading-7 text-white transition-all duration-200 bg-gray-900 border border-transparent rounded hover:bg-gray-600 font-pj focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+          role="button"
+        >
+          Sign Up
+        </a>
+      </div>
+      <!--Logged In Desktop-->
+      <div *ngIf="profile" class="hidden md:flex items-center gap-10">
+        <button
+          type="button"
+          class="bg-gray-200 text-gray-600 w-10 h-10 rounded-full"
+          (click)="op.toggle($event)"
+        >
+          <span *ngIf="!profile.photoUrl" aria-hidden="true">
+            <i class="pi pi-user"></i>
+          </span>
+
+          <span *ngIf="profile.photoUrl" aria-hidden="true">
+            <img
+              loading="lazy"
+              src="{{ profile.photoUrl }}"
+              class="rounded-full"
+            />
+          </span>
+        </button>
+        <p-menu #op [model]="menuItems" [popup]="true" />
+      </div>
+    </div>
+
+    <nav *ngIf="expanded" x-collapse>
+      <div class="px-1 py-8">
+        <div class="grid gap-y-7">
+          <ng-container *ngIf="user">
+            <a
+              *ngIf="user.role == 'Admin'"
+              routerLink="/admin-portal"
+              class="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+            >
+              Admin Portal
+            </a>
+          </ng-container>
+          <a
+            *ngIf="profile"
+            routerLink="/dashboard"
+            class="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+          >
+            Dashboard
+          </a>
+          <a
+            routerLink="/"
+            fragment="features"
+            class="flex items-center p-3 -m-3 text-base font-medium text-gray-900 transition-all duration-200 rounded hover:bg-gray-50 focus:outline-none font-pj focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+          >
+            Features
+          </a>
+
+          <a
+            routerLink="/pricing"
+            title=""
+            class="flex items-center p-3 -m-3 text-base font-medium text-gray-900 transition-all duration-200 rounded hover:bg-gray-50 focus:outline-none font-pj focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+          >
+            Pricing
+          </a>
+
+          <a
+            routerLink="/support"
+            title=""
+            class="flex items-center p-3 -m-3 text-base font-medium text-gray-900 transition-all duration-200 rounded hover:bg-gray-50 focus:outline-none font-pj focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+          >
+            Support
+          </a>
+          <a
+            *ngIf="profile"
+            (click)="logout()"
+            class="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+          >
+            Logout
+          </a>
+          <!--Not Logged In Mobile-->
+          <a
+            *ngIf="!profile"
+            routerLink="/sign-in"
+            class="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
+          >
+            Login
+          </a>
+
+          <a
+            *ngIf="!profile"
+            routerLink="/sign-up"
+            class="inline-flex items-center justify-center px-6 py-3 text-base font-bold leading-7 text-white transition-all duration-200 bg-gray-900 border border-transparent rounded hover:bg-gray-600 font-pj focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+            role="button"
+          >
+            Sign Up
+          </a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>

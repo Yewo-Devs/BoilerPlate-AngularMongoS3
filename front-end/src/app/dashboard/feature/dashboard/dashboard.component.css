@@ -1,0 +1,179 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  cursor: pointer;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 20rem auto;
+}
+
+.content-container {
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+.brand-section {
+  img {
+    cursor: pointer;
+    content: url("../../../../assets/images/yourlogo.svg");
+    width: 10rem;
+    margin: 0;
+  }
+
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dark-mode {
+  content: url("../../../../assets/images/yourlogodark.svg") !important;
+}
+
+.profile-container {
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  padding-right: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  gap: 0.75rem;
+
+  .pi-chevron-down {
+    font-size: 0.75rem;
+  }
+}
+
+.control-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.sidebar {
+  display: grid;
+  padding: 1rem;
+  min-height: 100vh;
+  width: 20rem;
+}
+
+.sidebar-options {
+  text-decoration: none;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.sidebar-option {
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.75rem;
+
+  p {
+    font-weight: 300;
+  }
+
+  .pi {
+    font-size: 1.25rem;
+    margin-left: 0;
+  }
+}
+
+.bottom {
+  height: min-content;
+  align-self: flex-end;
+}
+
+.sidebar-options.bottom {
+  padding-top: 0.5rem;
+}
+
+:host ::ng-deep .p-button.p-highlight {
+  background: #000;
+  border: 1px solid #000;
+}
+
+:host ::ng-deep p-selectButton {
+  margin-top: 1.25rem;
+}
+
+:host ::ng-deep .p-button {
+  padding: 0.75rem 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    display: flex;
+    margin-top: 1rem;
+  }
+
+  .sidebar {
+    width: 0;
+    padding: 0;
+    border: none;
+    transition: width 0.3s ease; /* Add transition for width */
+  }
+
+  .sidebar.open {
+    display: grid;
+    padding: 1rem;
+    width: 100vw;
+  }
+
+  .sidebar-options {
+    opacity: 0; /* Default hidden state */
+    display: none;
+    transition: opacity 0.3s ease; /* Add transition for opacity */
+  }
+
+  .sidebar.open .sidebar-options {
+    opacity: 1; /* Show options when open */
+    display: block;
+  }
+
+  .sidebar-option {
+    transform: scale(0); /* Default scaled down state */
+    transition: transform 0.3s ease; /* Add transition for transform */
+  }
+
+  .sidebar.open .sidebar-option {
+    transform: scale(1); /* Scale up options when open */
+  }
+
+  .content-container.open {
+    width: 0;
+  }
+
+  .content-container {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  :host ::ng-deep .p-dialog {
+    width: 90% !important;
+  }
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content:last-of-type {
+  border-radius: 6px;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  padding: 0px;
+}
+
+:host ::ng-deep .p-menu-submenu-label {
+  display: none;
+}
