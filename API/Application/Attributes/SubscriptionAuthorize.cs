@@ -19,7 +19,7 @@ namespace API.Application.Attributes
 
 		public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
 		{
-			var _firebaseService = context.HttpContext.RequestServices.GetRequiredService<IFirebaseService>();
+			var _mongoDatabaseService = context.HttpContext.RequestServices.GetRequiredService<IMongoDatabaseService>();
 
 			var authorizationHeader = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 			if (authorizationHeader == null || !authorizationHeader.StartsWith("Bearer "))
@@ -42,8 +42,8 @@ namespace API.Application.Attributes
 
 			if (!_cache.TryGetValue(userId, out Subscription subscription))
 			{
-				subscription = await _firebaseService
-					.GetInstanceOfType<Subscription>(Core.Models.Enums.FirebaseDataNodes.Subscription, userId);
+				subscription = await _mongoDatabaseService
+					.GetInstanceOfType<Subscription>(Core.Models.Enums.DataNodes.Subscription, userId);
 
 				if (subscription != null)
 				{

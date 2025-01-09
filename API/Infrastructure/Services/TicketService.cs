@@ -8,24 +8,24 @@ namespace API.Infrastructure.Services
 {
 	public class TicketService : ITicketService
 	{
-		private readonly IFirebaseService _firebaseService;
+		private readonly IMongoDatabaseService _mongoDatabaseService;
 		private readonly IEmailService _emailService;
 		private readonly string _saasOwnerEmail = Environment.GetEnvironmentVariable("SaaS_Owner_Email");
-		public TicketService(IFirebaseService firebaseService, IEmailService emailService)
+		public TicketService(IMongoDatabaseService mongoDatabaseService, IEmailService emailService)
         {
-			_firebaseService = firebaseService;
+			_mongoDatabaseService = mongoDatabaseService;
 			_emailService = emailService;
 		}
 
         public async Task ArchiveTicket(string Id)
 		{
-			var ticket = await _firebaseService
-				.GetInstanceOfType<Ticket>(FirebaseDataNodes.Ticket, Id);
+			var ticket = await _mongoDatabaseService
+				.GetInstanceOfType<Ticket>(DataNodes.Ticket, Id);
 
 			ticket.Archived = true;
 			ticket.ModifiedDate = DateTime.UtcNow;
 
-			await _firebaseService.UpdateData(FirebaseDataNodes.Ticket, Id, ticket);
+			await _mongoDatabaseService.UpdateData(DataNodes.Ticket, Id, ticket);
 
 			//Inform Client
 			await _emailService.SendEmail(
@@ -45,8 +45,8 @@ namespace API.Infrastructure.Services
 
 		public async Task<IEnumerable<Ticket>> GetTickets()
 		{
-			var result = await _firebaseService
-				.GetCollectionOfType<Ticket>(FirebaseDataNodes.Ticket);
+			var result = await _mongoDatabaseService
+				.GetCollectionOfType<Ticket>(DataNodes.Ticket);
 
 			return result;
 		}
@@ -59,7 +59,7 @@ namespace API.Infrastructure.Services
 			ticket.Archived = false;
 			ticket.ID = DateTime.UtcNow.Ticks.ToString();
 
-			await _firebaseService.StoreData(FirebaseDataNodes.Ticket, ticket, ticket.ID);
+			await _mongoDatabaseService.StoreData(DataNodes.Ticket, ticket, ticket.ID);
 
 			await _emailService.SendEmail(
 				"A new ticket has been created",

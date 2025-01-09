@@ -1,4 +1,4 @@
-# BoilerPlate-FirebaseAngular.Net CheckList
+# BoilerPlate-Angular.NetMongoS3 CheckList
 
 1. Setup Trustpilot account
 2. Update seo.json

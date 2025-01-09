@@ -9,20 +9,20 @@ namespace API.Infrastructure.Services
 {
 	public class TeamService : ITeamService
 	{
-		private readonly IFirebaseService _firebaseService;
+		private readonly IMongoDatabaseService _mongoDatabaseService;
 		private readonly IEmailService _emailService;
-		private readonly IFirebaseStorageService _firebaseStorageService;
+		private readonly IStorageService _storageService;
 
-		public TeamService(IFirebaseService firebaseService, IEmailService emailService, IFirebaseStorageService firebaseStorageService)
+		public TeamService(IMongoDatabaseService mongoDatabaseService, IEmailService emailService, IStorageService storageService)
 		{
-			_firebaseService = firebaseService;
+			_mongoDatabaseService = mongoDatabaseService;
 			_emailService = emailService;
-			_firebaseStorageService = firebaseStorageService;
+			_storageService = storageService;
 		}
 
 		public async Task AcceptInvite(string teamId, string inviteId, string userId)
 		{
-			var team = await _firebaseService.GetInstanceOfType<TeamDto>(FirebaseDataNodes.Team, teamId);
+			var team = await _mongoDatabaseService.GetInstanceOfType<TeamDto>(DataNodes.Team, teamId);
 			var invite = team.Invites.FirstOrDefault(i => i.Id == inviteId);
 
 			if (invite == null || invite.Revoked)
@@ -46,7 +46,7 @@ namespace API.Infrastructure.Services
 				Role = invite.Role
 			});
 
-			await _firebaseService.UpdateData(FirebaseDataNodes.Team, teamId, team);
+			await _mongoDatabaseService.UpdateData(DataNodes.Team, teamId, team);
 		}
 
 		public async Task CreateInvitation(CreateInvitationDto createInvitationDto)
@@ -76,7 +76,7 @@ namespace API.Infrastructure.Services
 
 			await _emailService.SendTeamInvitation(team, teamInvite.Id, createInvitationDto);
 
-			await _firebaseService.UpdateData(FirebaseDataNodes.Team, team.Id, team);
+			await _mongoDatabaseService.UpdateData(DataNodes.Team, team.Id, team);
 		}
 
 		public async Task<TeamDto> CreateTeamAsync(CreateTeamDto createTeamDto)
@@ -90,7 +90,7 @@ namespace API.Infrastructure.Services
 				TeamPhotoUrl = await StorePhoto(createTeamDto.TeamPhotoUrl)
 			};
 
-			await _firebaseService.StoreData(FirebaseDataNodes.Team, team, team.Id);
+			await _mongoDatabaseService.StoreData(DataNodes.Team, team, team.Id);
 
 			return team.Map<TeamDto>();
 		}
@@ -103,30 +103,30 @@ namespace API.Infrastructure.Services
 				return photoUrl;
 			}
 
-			return await _firebaseStorageService
+			return await _storageService
 				.StoreProfilePhoto(photoUrl, Guid.NewGuid().ToString(), "teamPhotoUrl");
 		}
 
 		public async Task DeleteTeamAsync(string id)
 		{
-			await _firebaseService.DeleteData(FirebaseDataNodes.Team, id);
+			await _mongoDatabaseService.DeleteData(DataNodes.Team, id);
 		}
 
 		public async Task<IEnumerable<TeamDto>> GetAllUserTeamsAsync(string userId)
 		{
-			var teams = await _firebaseService.GetCollectionOfType<TeamDto>(FirebaseDataNodes.Team);
+			var teams = await _mongoDatabaseService.GetCollectionOfType<TeamDto>(DataNodes.Team);
 
 			return teams.Where(t => t.Members.Any(m => m.UserId == userId));
 		}
 
 		public async Task<TeamDto> GetTeamByIdAsync(string id)
 		{
-			return await _firebaseService.GetInstanceOfType<TeamDto>(FirebaseDataNodes.Team, id);
+			return await _mongoDatabaseService.GetInstanceOfType<TeamDto>(DataNodes.Team, id);
 		}
 
 		public async Task UpdateTeamAsync(UpdateTeamDto updateTeamDto)
 		{
-			var team = await _firebaseService.GetInstanceOfType<Team>(FirebaseDataNodes.Team, updateTeamDto.Id);
+			var team = await _mongoDatabaseService.GetInstanceOfType<Team>(DataNodes.Team, updateTeamDto.Id);
 
 			if (team == null)
 			{
@@ -137,7 +137,7 @@ namespace API.Infrastructure.Services
 			team.Members = updateTeamDto.Members;
 			team.Invites = updateTeamDto.Invites;
 
-			await _firebaseService.UpdateData(FirebaseDataNodes.Team, updateTeamDto.Id, team);
+			await _mongoDatabaseService.UpdateData(DataNodes.Team, updateTeamDto.Id, team);
 		}
 	}
 }

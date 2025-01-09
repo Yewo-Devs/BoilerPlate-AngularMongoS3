@@ -7,7 +7,7 @@ namespace API.Application.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddScoped<ITicketService, TicketService>();
+			services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<INotificationService, NotificationService>();
 			services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IReportService, ReportService>();
@@ -15,8 +15,8 @@ namespace API.Application.Extensions
             services.AddScoped<ICloudflareService, CloudflareService>();
 			services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IPhotoService, PhotoService>();
-			services.AddScoped<IFirebaseService, FirebaseService>();
-			services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
+			services.AddScoped<IMongoDatabaseService, MongoDatabaseService>();
+			services.AddScoped<IStorageService, StorageService>();
             services.AddScoped<IHttpClientService, HttpClientService>();
 			services.AddScoped<IChatGptService, ChatGptService>();
 

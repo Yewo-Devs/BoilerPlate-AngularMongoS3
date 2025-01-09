@@ -13,16 +13,16 @@ namespace API.Infrastructure.Controllers
 	public class ProfileController : BaseApiController
 	{
 		private readonly IProfileService _profileService;
-		private readonly IFirebaseStorageService _firebaseStorageService;
+		private readonly IStorageService _storageService;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProfileController"/> class.
 		/// </summary>
 		/// <param name="profileService">The profile service.</param>
-		public ProfileController(IProfileService profileService, IFirebaseStorageService firebaseStorageService)
+		public ProfileController(IProfileService profileService, IStorageService storageService)
 		{
 			_profileService = profileService;
-			_firebaseStorageService = firebaseStorageService;
+			_storageService = storageService;
 		}
 
 		/// <summary>
@@ -45,11 +45,6 @@ namespace API.Infrastructure.Controllers
 
 			createUserProfileDto.PhotoUrl = filePath;
 
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			await _profileService.CreateUserProfile(createUserProfileDto);
 			return Ok();
 		}
@@ -63,11 +58,6 @@ namespace API.Infrastructure.Controllers
 		[HttpGet("get")]
 		public async Task<ActionResult<ProfileDto>> GetUserProfile([FromQuery] string userId)
 		{
-			if (string.IsNullOrEmpty(userId))
-			{
-				return BadRequest("User Id cannot be null or empty.");
-			}
-
 			var profile = await _profileService.GetUserProfile(userId);
 
 			return Ok(profile);
@@ -93,11 +83,6 @@ namespace API.Infrastructure.Controllers
 
 			editProfileDto.PhotoUrl = filePath;
 
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			await _profileService.UpdateUserProfile(editProfileDto);
 			return Ok();
 		}
@@ -111,11 +96,6 @@ namespace API.Infrastructure.Controllers
 		[HttpDelete("delete")]
 		public async Task<ActionResult> DeleteUserProfile([FromQuery] string userId)
 		{
-			if (string.IsNullOrEmpty(userId))
-			{
-				return BadRequest("User Id cannot be null or empty.");
-			}
-
 			await _profileService.DeleteUserProfile(userId);
 			return Ok();
 		}
@@ -138,7 +118,7 @@ namespace API.Infrastructure.Controllers
 				return photoUrl;
 			}
 
-			return await _firebaseStorageService
+			return await _storageService
 				.StoreProfilePhoto(photoUrl, Guid.NewGuid().ToString(), "photoUrl");
 		}
 	}

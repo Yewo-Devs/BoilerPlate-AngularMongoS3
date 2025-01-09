@@ -6,47 +6,47 @@ namespace API.Infrastructure.Services
 {
 	public class DataService: IDataService
 	{
-		private readonly IFirebaseService _firebaseService;
+		private readonly IMongoDatabaseService _mongoDatabaseService;
 
-		public DataService(IFirebaseService firebaseService)
+		public DataService(IMongoDatabaseService mongoDatabaseService)
 		{
-			_firebaseService = firebaseService;
+			_mongoDatabaseService = mongoDatabaseService;
 		}
 
 		#region IdentityX Implementations
 		public async Task DeleteData(string collection, string id)
 		{
-			FirebaseDataNodes node = (FirebaseDataNodes)Enum.Parse(typeof(FirebaseDataNodes), collection);
+			DataNodes node = (DataNodes)Enum.Parse(typeof(DataNodes), collection);
 
-			await _firebaseService.DeleteData(node, id);
+			await _mongoDatabaseService.DeleteData(node, id);
 		}
 
 		public async Task<IEnumerable<T>> GetCollectionOfType<T>(string collection)
 		{
-			FirebaseDataNodes node = (FirebaseDataNodes)Enum.Parse(typeof(FirebaseDataNodes), collection);
+			DataNodes node = (DataNodes)Enum.Parse(typeof(DataNodes), collection);
 
-			return await _firebaseService.GetCollectionOfType<T>(node);
+			return await _mongoDatabaseService.GetCollectionOfType<T>(node);
 		}
 
 		public async Task<T> GetInstanceOfType<T>(string collection, string id)
 		{
-			FirebaseDataNodes node = (FirebaseDataNodes)Enum.Parse(typeof(FirebaseDataNodes), collection);
+			DataNodes node = (DataNodes)Enum.Parse(typeof(DataNodes), collection);
 
-			return await _firebaseService.GetInstanceOfType<T>(node, id);
+			return await _mongoDatabaseService.GetInstanceOfType<T>(node, id);
 		}
 
 		public async Task StoreData(string collection, object data, string id)
 		{
-			FirebaseDataNodes node = (FirebaseDataNodes)Enum.Parse(typeof(FirebaseDataNodes), collection);
+			DataNodes node = (DataNodes)Enum.Parse(typeof(DataNodes), collection);
 
-			await _firebaseService.StoreData(node, data, id);
+			await _mongoDatabaseService.StoreData(node, data, id);
 		}
 
 		public async Task UpdateData(string collection, string path, object data)
 		{
-			FirebaseDataNodes node = (FirebaseDataNodes)Enum.Parse(typeof(FirebaseDataNodes), collection);
+			DataNodes node = (DataNodes)Enum.Parse(typeof(DataNodes), collection);
 
-			await _firebaseService.UpdateData(node, path, data);
+			await _mongoDatabaseService.UpdateData(node, path, data);
 		}
 		#endregion
 	}

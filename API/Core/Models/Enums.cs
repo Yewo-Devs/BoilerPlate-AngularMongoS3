@@ -2,7 +2,7 @@
 {
     public class Enums
     {
-        public enum FirebaseDataNodes
+        public enum DataNodes
         {
             Account,
 			Profile,

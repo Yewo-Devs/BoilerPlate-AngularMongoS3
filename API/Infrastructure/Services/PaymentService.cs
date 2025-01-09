@@ -10,32 +10,32 @@ using IdentityX.Application.Interfaces;
 using IEmailService = API.Application.Interfaces.IEmailService;
 using IdentityX.Application.Extensions;
 using Stripe.BillingPortal;
-using API.Core.Models;
-using Stripe.FinancialConnections;
 using Transaction = API.Core.Models.Purchases.Transaction;
 
 namespace API.Infrastructure.Services
 {
 	public class PaymentService : IPaymentService
 	{
-		private readonly string _applicationDomain;
+		private readonly string _apiDomain;
+		private readonly string _frontEndDomain;
 		private readonly string _stripeApiKey;
 		private readonly string _saasName;
 		private readonly string _saasOwnerEmail;
-		private readonly IFirebaseService _firebaseService;
+		private readonly IMongoDatabaseService _mongoDatabaseService;
 		private readonly IEmailService _emailService;
 		private readonly IAccountService _accountService;
 
-		public PaymentService(IFirebaseService firebaseService, IEmailService emailService, IAccountService accountService, IConfiguration configuration)
+		public PaymentService(IMongoDatabaseService mongoDatabaseService, IEmailService emailService, IAccountService accountService, IConfiguration configuration)
 		{
-			_applicationDomain = configuration["Application_Domain"];
+			_apiDomain = configuration["Api_Domain"];
+			_frontEndDomain = configuration["FrontEnd_Domain"];
 			_stripeApiKey = configuration["Stripe_ApiKey"];
 			_saasName = configuration["SaaS_Name"];
 			_saasOwnerEmail = configuration["SaaS_Owner_Email"];
 
 			StripeConfiguration.ApiKey = _stripeApiKey;
 
-			_firebaseService = firebaseService;
+			_mongoDatabaseService = mongoDatabaseService;
 			_emailService = emailService;
 			_accountService = accountService;
 
@@ -85,9 +85,9 @@ namespace API.Infrastructure.Services
 				Quantity = 1,
 			};
 
-			string stripeResultUrl = $"{_applicationDomain}/payment/payment-result?session_id={{CHECKOUT_SESSION_ID}}&accountId={checkoutDto.CustomerId}";
+			string stripeResultUrl = $"{_apiDomain}/payment/payment-result?session_id={{CHECKOUT_SESSION_ID}}&accountId={checkoutDto.CustomerId}";
 
-			await _firebaseService.StoreData(FirebaseDataNodes.Checkout, checkoutDto, checkoutDto.CustomerId);
+			await _mongoDatabaseService.StoreData(DataNodes.Checkout, checkoutDto, checkoutDto.CustomerId);
 
 			var appUser = await _accountService.GetUserFromId(checkoutDto.CustomerId);
 
@@ -123,11 +123,11 @@ namespace API.Infrastructure.Services
 			var customer = await customerService.GetAsync(session.CustomerId);
 
 			string paymentResult = session.PaymentStatus != "paid" ? "fail" : "success";
-			string resultUrl = $"{_applicationDomain}/payment-result?result={paymentResult}";
+			string resultUrl = $"{_frontEndDomain}/payment-result?result={paymentResult}";
 
 			string customerId = queryParams[1];
 
-			var checkoutDto = await _firebaseService.GetInstanceOfType<CheckoutDto>(FirebaseDataNodes.Checkout, customerId);
+			var checkoutDto = await _mongoDatabaseService.GetInstanceOfType<CheckoutDto>(DataNodes.Checkout, customerId);
 
 			var price = checkoutDto.PaymentType == PaymentTypes.SubscriptionPerUser ?
 					checkoutDto.Price + (checkoutDto.PricePerUser * (decimal)checkoutDto.NumberOfUsers) :
@@ -147,7 +147,7 @@ namespace API.Infrastructure.Services
 					Location = $"{customer.Address.City}, {customer.Address.Country}"
 				};
 
-				await _firebaseService.StoreData(FirebaseDataNodes.Transaction, _transaction, _transaction.Id);
+				await _mongoDatabaseService.StoreData(DataNodes.Transaction, _transaction, _transaction.Id);
 
 				return resultUrl;
 			}
@@ -175,7 +175,7 @@ namespace API.Infrastructure.Services
 				Location = $"{customer.Address.City}, {customer.Address.Country}"
 			};
 
-			await _firebaseService.StoreData(FirebaseDataNodes.Transaction, transaction, transaction.Id);
+			await _mongoDatabaseService.StoreData(DataNodes.Transaction, transaction, transaction.Id);
 
 			var customerPurchase = new CustomerPurchase
 			{
@@ -191,7 +191,7 @@ namespace API.Infrastructure.Services
 				Id = Guid.NewGuid().ToString(),
 			};
 
-			await _firebaseService.StoreData(FirebaseDataNodes.CustomerPurchase, customerPurchase, $"{customerId}/{customerPurchase.Id}");
+			await _mongoDatabaseService.StoreData(DataNodes.CustomerPurchase, customerPurchase, $"{customerId}/{customerPurchase.Id}");
 
 			if (checkoutDto.PaymentType == PaymentTypes.Subscription)
 			{
@@ -221,9 +221,9 @@ namespace API.Infrastructure.Services
 					CancellationDate = default(DateTime)
 				};
 
-				await _firebaseService.StoreData(FirebaseDataNodes.Subscription, subscription, customerId);
+				await _mongoDatabaseService.StoreData(DataNodes.Subscription, subscription, customerId);
 
-				return $"{_applicationDomain}/payment-result?result={paymentResult}&subscriptionInit=true";
+				return $"{_frontEndDomain}/payment-result?result={paymentResult}&subscriptionInit=true";
 			}
 
 			if (checkoutDto.PaymentType == PaymentTypes.SubscriptionPerUser)
@@ -255,21 +255,21 @@ namespace API.Infrastructure.Services
 					CancellationDate = default(DateTime)
 				};
 
-				await _firebaseService.StoreData(FirebaseDataNodes.Subscription, subscription, customerId);
+				await _mongoDatabaseService.StoreData(DataNodes.Subscription, subscription, customerId);
 
-				return $"{_applicationDomain}/payment-result?result={paymentResult}&subscriptionInit=true";
+				return $"{_frontEndDomain}/payment-result?result={paymentResult}&subscriptionInit=true";
 			}
 
-			await _firebaseService.DeleteData(FirebaseDataNodes.Checkout, customerId);
+			await _mongoDatabaseService.DeleteData(DataNodes.Checkout, customerId);
 
 			return resultUrl;
 		}
 
 		public async Task UpdateSubscription(UpdateSubscriptionDto updateSubscriptionDto)
 		{
-			var firebaseSubscription = await _firebaseService
+			var firebaseSubscription = await _mongoDatabaseService
 				.GetInstanceOfType<Core.Models.Purchases.Subscription>
-				(FirebaseDataNodes.Subscription, updateSubscriptionDto.CustomerId);
+				(DataNodes.Subscription, updateSubscriptionDto.CustomerId);
 
 			var subscriptionService = new SubscriptionService();
 			var subscription = await subscriptionService.GetAsync(firebaseSubscription.SubscriptionId);
@@ -318,18 +318,18 @@ namespace API.Infrastructure.Services
 
 			firebaseSubscription.Interval = interval;
 
-			await _firebaseService
-				.UpdateData(FirebaseDataNodes.Subscription, firebaseSubscription.CustomerId, firebaseSubscription);
+			await _mongoDatabaseService
+				.UpdateData(DataNodes.Subscription, firebaseSubscription.CustomerId, firebaseSubscription);
 		}
 
 		public async Task CancelSubscription(string subscriptionId)
 		{
-			var subscriptions = await _firebaseService.GetCollectionOfType<Core.Models.Purchases.Subscription>(FirebaseDataNodes.Subscription);
+			var subscriptions = await _mongoDatabaseService.GetCollectionOfType<Core.Models.Purchases.Subscription>(DataNodes.Subscription);
 			var subscription = subscriptions.First(sub => sub.SubscriptionId == subscriptionId);
 
 			subscription.CancellationDate = DateTime.UtcNow;
 
-			await _firebaseService.UpdateData(FirebaseDataNodes.Subscription, subscription.CustomerId, subscription);
+			await _mongoDatabaseService.UpdateData(DataNodes.Subscription, subscription.CustomerId, subscription);
 
 			var service = new SubscriptionService();
 			await service.CancelAsync(subscriptionId);
@@ -337,7 +337,7 @@ namespace API.Infrastructure.Services
 
 		public async Task HandleInvoicePaymentFailed(Invoice? invoice)
 		{
-			var subscriptions = await _firebaseService.GetCollectionOfType<Core.Models.Purchases.Subscription>(FirebaseDataNodes.Subscription);
+			var subscriptions = await _mongoDatabaseService.GetCollectionOfType<Core.Models.Purchases.Subscription>(DataNodes.Subscription);
 			var subscription = subscriptions.First(sub => sub.SubscriptionId == invoice.SubscriptionId);
 
 			var appUser = await _accountService.GetUserFromId(subscription.CustomerId);
@@ -359,12 +359,12 @@ namespace API.Infrastructure.Services
 				Location = $"{customer.Address.City}, {customer.Address.Country}"
 			};
 
-			await _firebaseService.StoreData(FirebaseDataNodes.Transaction, transaction, transaction.Id);
+			await _mongoDatabaseService.StoreData(DataNodes.Transaction, transaction, transaction.Id);
 		}
 
 		public async Task HandleInvoicePaymentSucceeded(Invoice? invoice)
 		{
-			var subscriptions = await _firebaseService.GetCollectionOfType<Core.Models.Purchases.Subscription>(FirebaseDataNodes.Subscription);
+			var subscriptions = await _mongoDatabaseService.GetCollectionOfType<Core.Models.Purchases.Subscription>(DataNodes.Subscription);
 			var subscription = subscriptions.First(sub => sub.SubscriptionId == invoice.SubscriptionId);
 
 			var service = new SubscriptionService();
@@ -372,7 +372,7 @@ namespace API.Infrastructure.Services
 
 			subscription.ExpiryDate = sub.CurrentPeriodEnd;
 
-			await _firebaseService.UpdateData(FirebaseDataNodes.Subscription, subscription.CustomerId, subscription);
+			await _mongoDatabaseService.UpdateData(DataNodes.Subscription, subscription.CustomerId, subscription);
 
 			var appUser = await _accountService.GetUserFromId(subscription.CustomerId);
 			var checkoutDto = subscription.Map<CheckoutDto>();
@@ -396,7 +396,7 @@ namespace API.Infrastructure.Services
 				Location = $"{customer.Address.City}, {customer.Address.Country}"
 			};
 
-			await _firebaseService.StoreData(FirebaseDataNodes.Transaction, transaction, transaction.Id);
+			await _mongoDatabaseService.StoreData(DataNodes.Transaction, transaction, transaction.Id);
 		}
 
 		public async Task<string> UpdatePaymentMethod(string subscriptionId)
@@ -410,7 +410,7 @@ namespace API.Infrastructure.Services
 				var options = new Stripe.BillingPortal.SessionCreateOptions
 				{
 					Customer = customerId,
-					ReturnUrl = $"{_applicationDomain}/dashboard/billing"
+					ReturnUrl = $"{_frontEndDomain}/dashboard/billing"
 				};
 
 				var service = new Stripe.BillingPortal.SessionService();
@@ -431,7 +431,7 @@ namespace API.Infrastructure.Services
 				var options = new Stripe.BillingPortal.SessionCreateOptions
 				{
 					Customer = customerId,
-					ReturnUrl = $"{_applicationDomain}/dashboard/billing"
+					ReturnUrl = $"{_frontEndDomain}/dashboard/billing"
 				};
 
 				var service = new Stripe.BillingPortal.SessionService();
@@ -465,7 +465,7 @@ namespace API.Infrastructure.Services
 						Enabled = true,
 					},
 				},
-				DefaultReturnUrl = $"{_applicationDomain}/dashboard/billing"
+				DefaultReturnUrl = $"{_frontEndDomain}/dashboard/billing"
 			};
 
 			// Create a new configuration
@@ -477,7 +477,7 @@ namespace API.Infrastructure.Services
 			var service = new WebhookEndpointService();
 			var existingWebhooks = await service.ListAsync(new WebhookEndpointListOptions());
 
-			string webhookUrl = $"{_applicationDomain}/payment/webhook";
+			string webhookUrl = $"{_apiDomain}/payment/webhook";
 			if (existingWebhooks.Data.Any(we => we.Url == webhookUrl))
 				return;
 
@@ -504,13 +504,13 @@ namespace API.Infrastructure.Services
 
 		public async Task<Core.Models.Purchases.Subscription> GetSubscription(string userId)
 		{
-			return await _firebaseService
-					.GetInstanceOfType<Core.Models.Purchases.Subscription>(FirebaseDataNodes.Subscription, userId);
+			return await _mongoDatabaseService
+					.GetInstanceOfType<Core.Models.Purchases.Subscription>(DataNodes.Subscription, userId);
 		}
 
 		public async Task<IEnumerable<Transaction>> GetUserTransactions(string userId, int pageSize, int currentPage)
 		{
-			var transactions = await _firebaseService.GetCollectionOfType<Transaction>(FirebaseDataNodes.Transaction);
+			var transactions = await _mongoDatabaseService.GetCollectionOfType<Transaction>(DataNodes.Transaction);
 
 			transactions = transactions.Where(t => t.CustomerId == userId)
 				.OrderByDescending(t => t.DateTime)

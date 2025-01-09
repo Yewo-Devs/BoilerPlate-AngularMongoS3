@@ -10,25 +10,25 @@ namespace API.Infrastructure.Services
 {
 	public class NotificationService : INotificationService
 	{
-		private readonly IFirebaseService _firebaseService;
+		private readonly IMongoDatabaseService _mongoDatabaseService;
 		private readonly IEmailService _emailService;
 		private readonly IAccountService _accountService;
 
-		public NotificationService(IFirebaseService firebaseService, IEmailService emailService, 
+		public NotificationService(IMongoDatabaseService mongoDatabaseService, IEmailService emailService, 
 			IAccountService accountService)
         {
-			_firebaseService = firebaseService;
+			_mongoDatabaseService = mongoDatabaseService;
 			_emailService = emailService;
 			_accountService = accountService;
 		}
         public async Task ArchiveNotification(string notificationID)
 		{
-			var notification = await _firebaseService
-				.GetInstanceOfType<Notification>(FirebaseDataNodes.Notification, notificationID);
+			var notification = await _mongoDatabaseService
+				.GetInstanceOfType<Notification>(DataNodes.Notification, notificationID);
 
 			notification.Archived = true;
 
-			await _firebaseService.UpdateData(FirebaseDataNodes.Notification, notificationID, notification);
+			await _mongoDatabaseService.UpdateData(DataNodes.Notification, notificationID, notification);
 		}
 
 		public async Task<int> GetNotificationCount(string ownerID)
@@ -42,7 +42,7 @@ namespace API.Infrastructure.Services
 
 		public async Task<IEnumerable<Notification>> GetNotifications(string ownerID)
 		{
-			var result = await _firebaseService.GetCollectionOfType<Notification>(FirebaseDataNodes.Notification);
+			var result = await _mongoDatabaseService.GetCollectionOfType<Notification>(DataNodes.Notification);
 
 			return result.Where(i => i.OwnerID == ownerID);
 		}
@@ -54,7 +54,7 @@ namespace API.Infrastructure.Services
 			notification.DateTime = DateTime.UtcNow;
 			notification.Archived = false;
 
-			await _firebaseService.StoreData(FirebaseDataNodes.Notification, notification, null, true);
+			await _mongoDatabaseService.StoreData(DataNodes.Notification, notification, null, true);
 
 			var user = await _accountService.GetUserFromId(sendNotificationDto.OwnerID);
 

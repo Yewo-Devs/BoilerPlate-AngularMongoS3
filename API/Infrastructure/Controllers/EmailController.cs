@@ -28,11 +28,6 @@ namespace API.Infrastructure.Controllers
 		[HttpPost("send-customer-contact-form")]
 		public async Task<ActionResult> SendCustomerContactFormMessage([FromBody] CustomerContactFormMessageDto customerContactFormMessage)
 		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			await _emailService.SendCustomerContactFormMessage(customerContactFormMessage);
 			return Ok();
 		}

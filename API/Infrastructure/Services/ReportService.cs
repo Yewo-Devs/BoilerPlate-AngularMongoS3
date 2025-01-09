@@ -13,15 +13,15 @@ namespace API.Infrastructure.Services
 {
 	public class ReportService : IReportService
 	{
-		private readonly IFirebaseService _firebaseService;
+		private readonly IMongoDatabaseService _mongoDatabaseService;
 		private readonly IProfileService _profileService;
 		private readonly IAccountService _accountService;
 		private readonly string _ga4PropertyId;
 
-		public ReportService(IFirebaseService firebaseService, IProfileService profileService,
+		public ReportService(IMongoDatabaseService mongoDatabaseService, IProfileService profileService,
 			IAccountService accountService)
 		{
-			_firebaseService = firebaseService;
+			_mongoDatabaseService = mongoDatabaseService;
 			_profileService = profileService;
 			_accountService = accountService;
 
@@ -33,8 +33,8 @@ namespace API.Infrastructure.Services
 			DashboardDto dashboardDto = new DashboardDto();
 
 			// Get Transactions
-			var transactions = await _firebaseService
-				.GetCollectionOfType<Transaction>(FirebaseDataNodes.Transaction, new FilteringOptions()
+			var transactions = await _mongoDatabaseService
+				.GetCollectionOfType<Transaction>(DataNodes.Transaction, new FilteringOptions()
 				{
 					StartDate = DateTime.UtcNow.AddMonths(-12),
 					EndDate = DateTime.UtcNow
@@ -314,8 +314,8 @@ namespace API.Infrastructure.Services
 
 		public async Task<Hashtable[]> GetSalesReport(PeriodDto periodDto)
 		{
-			var transactions = await _firebaseService
-				.GetCollectionOfType<Transaction>(Core.Models.Enums.FirebaseDataNodes.Transaction,
+			var transactions = await _mongoDatabaseService
+				.GetCollectionOfType<Transaction>(Core.Models.Enums.DataNodes.Transaction,
 				new FilteringOptions()
 				{
 					StartDate = periodDto.StartDate,

@@ -1,6 +1,5 @@
 using API.Application.Extensions;
 using API.Infrastructure.Services;
-using CompressedStaticFiles;
 using IdentityX.Application.Extensions;
 
 namespace API
@@ -25,7 +24,6 @@ namespace API
 
 			services.AddControllers();
 			services.AddCors();
-			services.AddCompressedStaticFiles();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
