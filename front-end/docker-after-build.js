@@ -11,9 +11,6 @@ const dockerfilePath = path.join(
 const dockerfileContent = `# Use the latest Node.js image as the base image
 FROM node:latest
 
-# Set the working directory
-WORKDIR /usr/src/app
-
 # Copy the rest of the application code
 COPY . .
 

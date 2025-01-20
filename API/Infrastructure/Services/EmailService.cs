@@ -41,7 +41,15 @@ namespace API.Infrastructure.Services
 
 		private async void Initialize()
 		{
-			await AuthenticateDomain(_emailDomain);
+			try 
+			{
+				await AuthenticateDomain(_emailDomain);
+			}
+			catch
+			{
+				return;
+			}
+			
 		}
 
 		public async Task SendEmail(string message, string subject, List<string> receipients)
