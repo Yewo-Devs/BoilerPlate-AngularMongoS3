@@ -10,7 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "prebuild": "node src/generate-sitemap.js",
-    "postbuild": "node docker-after-build.js"
+    "postbuild": "node package-after-build.js"
   },
   "private": true,
   "dependencies": {
