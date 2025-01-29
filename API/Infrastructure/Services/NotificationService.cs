@@ -26,6 +26,9 @@ namespace API.Infrastructure.Services
 			var notification = await _mongoDatabaseService
 				.GetInstanceOfType<Notification>(DataNodes.Notification, notificationID);
 
+			if (notification == null)
+				return;
+
 			notification.Archived = true;
 
 			await _mongoDatabaseService.UpdateData(DataNodes.Notification, notificationID, notification);
@@ -51,10 +54,11 @@ namespace API.Infrastructure.Services
 		{
 			Notification notification = sendNotificationDto.Map<Notification>();
 
+			notification.ID = Guid.NewGuid().ToString();
 			notification.DateTime = DateTime.UtcNow;
 			notification.Archived = false;
 
-			await _mongoDatabaseService.StoreData(DataNodes.Notification, notification, null, true);
+			await _mongoDatabaseService.StoreData(DataNodes.Notification, notification, notification.ID);
 
 			var user = await _accountService.GetUserFromId(sendNotificationDto.OwnerID);
 

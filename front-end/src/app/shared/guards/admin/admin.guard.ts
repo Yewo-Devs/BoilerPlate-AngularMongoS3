@@ -20,20 +20,8 @@ export class AdminGuard implements CanActivate {
     if (user) {
       if (user.role == 'Admin') {
         return true;
-      } else {
-        this.toastService.error('You are unauthorized!');
-        this.routerService.navigateByUrl('/sign-in');
-        return false;
       }
     }
-
-    let prefs = this.preferencesService.getPreferences();
-    prefs.nextPage = this.routerService.url;
-
-    this.preferencesService.setPreferences(prefs);
-
-    this.toastService.error('You are unauthorized!');
-    this.routerService.navigateByUrl('/sign-in');
 
     return false;
   }

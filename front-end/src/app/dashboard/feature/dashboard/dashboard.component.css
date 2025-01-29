@@ -12,7 +12,7 @@ a {
 
 .container {
   display: grid;
-  grid-template-columns: 20rem auto;
+  grid-template-columns: 20rem calc(100vw - 20rem);
 }
 
 .content-container {

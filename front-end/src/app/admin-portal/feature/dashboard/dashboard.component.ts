@@ -38,14 +38,19 @@ export class DashboardComponent {
 
   ngOnInit(): void {
     this.busyService.busy();
-    this.reportService.getDashboard().subscribe((data: DashboardDto) => {
-      this.dashboard = data;
+    this.reportService.getDashboard().subscribe(
+      (data: DashboardDto) => {
+        this.dashboard = data;
 
-      this.updateChart('year');
-      this.updateSources('week');
+        this.updateChart('year');
+        this.updateSources('week');
 
-      this.busyService.idle();
-    });
+        this.busyService.idle();
+      },
+      (error) => {
+        this.busyService.idle();
+      }
+    );
   }
 
   totalSessions(sessions) {

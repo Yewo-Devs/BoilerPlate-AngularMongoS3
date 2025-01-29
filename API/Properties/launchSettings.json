@@ -41,7 +41,9 @@
         "Email_Domain": "",
         "Cloudflare_ApiToken": "",
         "Ga4_PropertyId": "",
-        "GOOGLE_APPLICATION_CREDENTIALS": ""
+        "GOOGLE_APPLICATION_CREDENTIALS": "",
+        "Hangfire_User": "",
+        "Hangfire_Password": ""
       }
     },
     "IIS Express": {

@@ -51,15 +51,15 @@
           <div
             routerLink="/dashboard/notifications"
             (click)="isSidebarOpen = false"
-            class="cursor-pointer p-1 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded-md"
+            class="cursor-pointer flex items-center p-1 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded-md"
           >
-            <i class="pi pi-bell text-xl"></i>
             <span
               *ngIf="notificationCount > 0"
-              class="inline-flex items-center px-1.5 absolute -top-px -right-1 py-0.5 rounded-full text-xs font-semibold bg-indigo-600 text-white"
+              class="inline-flex items-center mr-1 px-1.5 py-0.5 rounded-full text-xs font-semibold bg-orange-600 text-white"
             >
               {{ notificationCount }}
             </span>
+            <i class="pi pi-bell"></i>
           </div>
         </div>
 
