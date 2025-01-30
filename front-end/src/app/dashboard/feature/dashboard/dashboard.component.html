@@ -3,7 +3,10 @@
     class="flex md:hidden absolute top-0 w-full gap-5 px-4 py-2 bg-gray-50 dark:bg-neutral-900"
   >
     <!-- Hamburger Button -->
-    <button class="hamburger-button" (click)="isSidebarOpen = !isSidebarOpen">
+    <button
+      class="hamburger-button"
+      (click)="isSidebarOpen = !isSidebarOpen; op.visible = false"
+    >
       <i class="pi pi-bars text-2xl"></i>
     </button>
 
@@ -30,24 +33,30 @@
         <div class="control-container">
           <div
             class="profile-container border border-gray-200 dark:border-neutral-600 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded-md"
-            (click)="op.toggle($event)"
+            (click)="op.visible = !op.visible"
           >
-            <img
-              loading="lazy"
-              *ngIf="profile.photoUrl"
-              class="w-8 h-8 rounded-md"
-              src="{{ profile.photoUrl }}"
-            />
-            <div
-              *ngIf="!profile.photoUrl"
-              class="bg-gray-200 dark:bg-neutral-600 flex text-gray-600 dark:text-white w-8 h-8 rounded-md justify-center items-center"
-            >
-              <i class="pi pi-user"></i>
+            <div class="relative">
+              <img
+                loading="lazy"
+                *ngIf="profile.photoUrl"
+                class="w-8 h-8 rounded-md"
+                src="{{ profile.photoUrl }}"
+              />
+              <div
+                *ngIf="!profile.photoUrl"
+                class="bg-gray-200 dark:bg-neutral-600 flex text-gray-600 dark:text-white w-8 h-8 rounded-md justify-center items-center"
+              >
+                <i class="pi pi-user"></i>
+              </div>
+              <app-dropdown-menu #op [items]="menuItems"></app-dropdown-menu>
             </div>
-            <p class="text">{{ profile.firstName }} {{ profile.lastName }}</p>
+
+            <p class="text block">
+              {{ profile.firstName }} {{ profile.lastName }}
+            </p>
             <i class="pi pi-chevron-down text"></i>
           </div>
-          <p-menu #op [model]="menuItems" [popup]="true" />
+
           <div
             routerLink="/dashboard/notifications"
             (click)="isSidebarOpen = false"

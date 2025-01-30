@@ -46,50 +46,33 @@
                   Updated {{ item.lastUpdated | date : "MMM dd, yyyy" }}
                 </label>
               </div>
-              <button class="btn btn-ellips" (click)="menu(item, $event, i)">
+              <button
+                class="btn btn-ellips relative"
+                (click)="menu(item, $event, i)"
+              >
                 <i class="pi pi-ellipsis-h text"></i>
-                <p-menu
+                <app-dropdown-menu
                   #menuq
-                  [model]="[
+                  [left]="true"
+                  [items]="[
                     {
-                      label: 'Actions',
-                      items: [
-                        {
-                          label: 'Edit',
-                          icon: 'pi pi-pen-to-square'
-                        },
-                        {
-                          label: 'Move to folder',
-                          icon: 'pi pi-folder'
-                        },
-                        {
-                          label: 'Copy link',
-                          icon: 'pi pi-link'
-                        },
-                        {
-                          label: 'Delete',
-                          icon: 'pi pi-trash red'
-                        }
-                      ]
+                      label: 'Edit',
+                      icon: 'pi pi-pen-to-square'
+                    },
+                    {
+                      label: 'Move to folder',
+                      icon: 'pi pi-folder'
+                    },
+                    {
+                      label: 'Copy link',
+                      icon: 'pi pi-link'
+                    },
+                    {
+                      label: 'Delete',
+                      icon: 'pi pi-trash red'
                     }
                   ]"
-                  [popup]="true"
-                >
-                  <ng-template pTemplate="item" let-item>
-                    <a
-                      pRipple
-                      class="kebab flex align-items-center p-menuitem-link"
-                    >
-                      <span [class]="item.icon"></span>
-                      <label *ngIf="item.label == 'Delete'" class="red">{{
-                        item.label
-                      }}</label>
-                      <label *ngIf="item.label != 'Delete'">{{
-                        item.label
-                      }}</label>
-                    </a>
-                  </ng-template>
-                </p-menu>
+                ></app-dropdown-menu>
               </button>
             </div>
           </div>

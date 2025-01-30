@@ -1,0 +1,19 @@
+<div
+  *ngIf="visible"
+  @dropdownAnimation
+  ngClass="{'panel-left' : left}"
+  [class.panel-left]="left"
+  class="panel bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-600 rounded-lg text-gray-700 dark:text-white text-sm"
+>
+  <ul class="min-w-48 p-2">
+    <ng-container *ngFor="let item of items">
+      <li
+        (click)="item.command()"
+        class="flex gap-2 items-center rounded-md p-2 hover:bg-gray-100 dark:hover:bg-neutral-600 cursor-pointer"
+      >
+        <i *ngIf="item.icon" class="pi" ngClass="{{ item.icon }}"></i>
+        {{ item.label }}
+      </li>
+    </ng-container>
+  </ul>
+</div>

@@ -173,7 +173,3 @@ a {
 :host ::ng-deep .p-dialog .p-dialog-content {
   padding: 0px;
 }
-
-:host ::ng-deep .p-menu-submenu-label {
-  display: none;
-}

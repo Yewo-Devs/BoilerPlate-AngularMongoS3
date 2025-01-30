@@ -29,39 +29,35 @@ export class DashboardComponent implements OnInit {
 
   menuItems = [
     {
-      items: [
-        {
-          label: 'Profile',
-          icon: 'pi pi-user',
-          command: () => {
-            this.isSidebarOpen = false;
-            this.router.navigateByUrl('/dashboard/profile');
-          },
-        },
-        {
-          label: 'Team',
-          icon: 'pi pi-users',
-          command: () => {
-            this.isSidebarOpen = false;
-            this.router.navigateByUrl('/dashboard/team');
-          },
-        },
-        {
-          label: 'Billing',
-          icon: 'pi pi-money-bill',
-          command: () => {
-            this.isSidebarOpen = false;
-            this.router.navigateByUrl('/dashboard/billing');
-          },
-        },
-        {
-          label: 'Logout',
-          icon: 'pi pi-sign-out',
-          command: () => {
-            this.logout();
-          },
-        },
-      ],
+      label: 'Profile',
+      icon: 'pi pi-user',
+      command: () => {
+        this.isSidebarOpen = false;
+        this.router.navigateByUrl('/dashboard/profile');
+      },
+    },
+    {
+      label: 'Team',
+      icon: 'pi pi-users',
+      command: () => {
+        this.isSidebarOpen = false;
+        this.router.navigateByUrl('/dashboard/team');
+      },
+    },
+    {
+      label: 'Billing',
+      icon: 'pi pi-money-bill',
+      command: () => {
+        this.isSidebarOpen = false;
+        this.router.navigateByUrl('/dashboard/billing');
+      },
+    },
+    {
+      label: 'Logout',
+      icon: 'pi pi-sign-out',
+      command: () => {
+        this.logout();
+      },
     },
   ];
 

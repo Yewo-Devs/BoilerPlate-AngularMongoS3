@@ -137,8 +137,8 @@
       <div *ngIf="profile" class="hidden md:flex items-center gap-10">
         <button
           type="button"
-          class="bg-gray-200 text-gray-600 w-10 h-10 rounded-full"
-          (click)="op.toggle($event)"
+          class="bg-gray-200 relative text-gray-600 w-10 h-10 rounded-full"
+          (click)="op.visible = !op.visible"
         >
           <span *ngIf="!profile.photoUrl" aria-hidden="true">
             <i class="pi pi-user"></i>
@@ -151,8 +151,13 @@
               class="rounded-full"
             />
           </span>
+
+          <app-dropdown-menu
+            #op
+            [left]="true"
+            [items]="menuItems"
+          ></app-dropdown-menu>
         </button>
-        <p-menu #op [model]="menuItems" [popup]="true" />
       </div>
     </div>
 
