@@ -22,7 +22,7 @@ export class SeoService {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        map(() => this.router.url.split('/').pop()),
+        map(() => this.router.url.split('?')[0].split('/').pop()), // Strip query params
         switchMap((route) => this.getSeoData(route))
       )
       .subscribe((data: any) => {

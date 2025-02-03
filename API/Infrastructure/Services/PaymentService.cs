@@ -11,6 +11,9 @@ using IEmailService = API.Application.Interfaces.IEmailService;
 using IdentityX.Application.Extensions;
 using Stripe.BillingPortal;
 using Transaction = API.Core.Models.Purchases.Transaction;
+using Amazon.Runtime.Internal.Util;
+using Microsoft.Extensions.Caching.Memory;
+using CloudinaryDotNet.Actions;
 
 namespace API.Infrastructure.Services
 {
@@ -24,9 +27,12 @@ namespace API.Infrastructure.Services
 		private readonly IMongoDatabaseService _mongoDatabaseService;
 		private readonly IEmailService _emailService;
 		private readonly IAccountService _accountService;
+		private readonly IMemoryCache _cache;
 
-		public PaymentService(IMongoDatabaseService mongoDatabaseService, IEmailService emailService, IAccountService accountService, IConfiguration configuration)
+		public PaymentService(IMongoDatabaseService mongoDatabaseService, IEmailService emailService, 
+			IAccountService accountService, IConfiguration configuration, IMemoryCache cache)
 		{
+			_cache = cache;
 			_apiDomain = configuration["Api_Domain"];
 			_frontEndDomain = configuration["FrontEnd_Domain"];
 			_stripeApiKey = configuration["Stripe_ApiKey"];
@@ -120,7 +126,7 @@ namespace API.Infrastructure.Services
 
 			// Retrieve customer's country
 			var customerService = new CustomerService();
-			var customer = await customerService.GetAsync(session.CustomerId);
+			var customer = session.CustomerId != null? await customerService.GetAsync(session.CustomerId) : null;
 
 			string paymentResult = session.PaymentStatus != "paid" ? "fail" : "success";
 			string resultUrl = $"{_frontEndDomain}/payment-result?result={paymentResult}";
@@ -140,11 +146,11 @@ namespace API.Infrastructure.Services
 					Amount = price,
 					DateTime = DateTime.UtcNow,
 					CustomerId = customerId,
-					Id = DateTime.UtcNow.Ticks.ToString(),
+					Id = Guid.NewGuid().ToString(),
 					ItemTitle = checkoutDto.ItemTitle,
 					Currency = checkoutDto.Currency,
 					Status = "Failed",
-					Location = $"{customer.Address.City}, {customer.Address.Country}"
+					Location = customer != null? $"{customer.Address.City}, {customer.Address.Country}" : "Unknown"
 				};
 
 				await _mongoDatabaseService.StoreData(DataNodes.Transaction, _transaction, _transaction.Id);
@@ -168,11 +174,11 @@ namespace API.Infrastructure.Services
 				Amount = price,
 				DateTime = DateTime.UtcNow,
 				CustomerId = customerId,
-				Id = DateTime.UtcNow.Ticks.ToString(),
+				Id = Guid.NewGuid().ToString(),
 				ItemTitle = checkoutDto.ItemTitle,
 				Currency = checkoutDto.Currency,
 				Status = "Success",
-				Location = $"{customer.Address.City}, {customer.Address.Country}"
+				Location = customer != null ? $"{customer.Address.City}, {customer.Address.Country}" : "Unknown"
 			};
 
 			await _mongoDatabaseService.StoreData(DataNodes.Transaction, transaction, transaction.Id);
@@ -191,7 +197,7 @@ namespace API.Infrastructure.Services
 				Id = Guid.NewGuid().ToString(),
 			};
 
-			await _mongoDatabaseService.StoreData(DataNodes.CustomerPurchase, customerPurchase, $"{customerId}/{customerPurchase.Id}");
+			await _mongoDatabaseService.StoreData(DataNodes.CustomerPurchase, customerPurchase, $"{customerPurchase.Id}");
 
 			if (checkoutDto.PaymentType == PaymentTypes.Subscription)
 			{
@@ -216,7 +222,8 @@ namespace API.Infrastructure.Services
 					Currency = checkoutDto.Currency,
 					ItemTitle = checkoutDto.ItemTitle,
 					ItemDescription = checkoutDto.ItemDescription,
-					Id = Guid.NewGuid().ToString(),
+					Id = customerId,
+					MemberIds = new string[1] { customerId },
 					Interval = interval,
 					CancellationDate = default(DateTime)
 				};
@@ -249,7 +256,7 @@ namespace API.Infrastructure.Services
 					Currency = checkoutDto.Currency,
 					ItemTitle = checkoutDto.ItemTitle,
 					ItemDescription = checkoutDto.ItemDescription,
-					Id = Guid.NewGuid().ToString(),
+					Id = customerId,
 					MemberIds = new string[1] { customerId },
 					Interval = interval,
 					CancellationDate = default(DateTime)
@@ -267,12 +274,12 @@ namespace API.Infrastructure.Services
 
 		public async Task UpdateSubscription(UpdateSubscriptionDto updateSubscriptionDto)
 		{
-			var firebaseSubscription = await _mongoDatabaseService
+			var persistedSubscription = await _mongoDatabaseService
 				.GetInstanceOfType<Core.Models.Purchases.Subscription>
 				(DataNodes.Subscription, updateSubscriptionDto.CustomerId);
 
 			var subscriptionService = new SubscriptionService();
-			var subscription = await subscriptionService.GetAsync(firebaseSubscription.SubscriptionId);
+			var subscription = await subscriptionService.GetAsync(persistedSubscription.SubscriptionId);
 
 			var options = new SubscriptionUpdateOptions
 			{
@@ -304,11 +311,11 @@ namespace API.Infrastructure.Services
 					updateSubscriptionDto.Price;
 
 			var updatedSubscription = await subscriptionService
-				.UpdateAsync(firebaseSubscription.SubscriptionId, options);
+				.UpdateAsync(persistedSubscription.SubscriptionId, options);
 
 			// Update the subscription details in Firebase
-			firebaseSubscription.Price = price;
-			firebaseSubscription.ExpiryDate = updatedSubscription.CurrentPeriodEnd;
+			persistedSubscription.Price = price;
+			persistedSubscription.ExpiryDate = updatedSubscription.CurrentPeriodEnd;
 
 			string interval = updateSubscriptionDto.SubscriptionInterval;
 
@@ -316,10 +323,10 @@ namespace API.Infrastructure.Services
 
 			interval = interval.ToLower() == "day" ? "Daily" : interval + "ly";
 
-			firebaseSubscription.Interval = interval;
+			persistedSubscription.Interval = interval;
 
 			await _mongoDatabaseService
-				.UpdateData(DataNodes.Subscription, firebaseSubscription.CustomerId, firebaseSubscription);
+				.UpdateData(DataNodes.Subscription, persistedSubscription.CustomerId, persistedSubscription);
 		}
 
 		public async Task CancelSubscription(string subscriptionId)
@@ -352,7 +359,7 @@ namespace API.Infrastructure.Services
 				Amount = subscription.Price,
 				DateTime = DateTime.UtcNow,
 				CustomerId = subscription.CustomerId,
-				Id = DateTime.UtcNow.Ticks.ToString(),
+				Id = Guid.NewGuid().ToString(),
 				ItemTitle = subscription.ItemTitle,
 				Currency = subscription.Currency,
 				Status = "Failed",
@@ -389,7 +396,7 @@ namespace API.Infrastructure.Services
 				Amount = subscription.Price,
 				DateTime = DateTime.UtcNow,
 				CustomerId = subscription.CustomerId,
-				Id = DateTime.UtcNow.Ticks.ToString(),
+				Id = Guid.NewGuid().ToString(),
 				ItemTitle = subscription.ItemTitle,
 				Currency = checkoutDto.Currency,
 				Status = "Success",
@@ -504,8 +511,25 @@ namespace API.Infrastructure.Services
 
 		public async Task<Core.Models.Purchases.Subscription> GetSubscription(string userId)
 		{
-			return await _mongoDatabaseService
-					.GetInstanceOfType<Core.Models.Purchases.Subscription>(DataNodes.Subscription, userId);
+			if (!_cache.TryGetValue(userId, out Core.Models.Purchases.Subscription subscription))
+			{
+				var subscriptions = await _mongoDatabaseService
+					.GetCollectionOfType<Core.Models.Purchases.Subscription>(DataNodes.Subscription);
+
+				subscription = subscriptions.FirstOrDefault(sub => sub.MemberIds.Contains(userId));
+
+				if (subscription != null)
+				{
+					var cacheEntryOptions = new MemoryCacheEntryOptions()
+						.SetSlidingExpiration(TimeSpan.FromMinutes(30));
+
+					_cache.Set(userId, subscription, cacheEntryOptions);
+				}
+
+				return subscription;
+			}
+
+			return subscription;
 		}
 
 		public async Task<IEnumerable<Transaction>> GetUserTransactions(string userId, int pageSize, int currentPage)

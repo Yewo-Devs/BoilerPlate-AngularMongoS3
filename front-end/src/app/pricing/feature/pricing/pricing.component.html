@@ -1,7 +1,7 @@
 <app-nav></app-nav>
 <!--Pricing Section-->
 <section class="py-12 sm:py-16 lg:py-20">
-  <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+  <div class="px-4 mx-auto max-w-6xl sm:px-6 lg:px-8">
     <div class="max-w-2xl text-center sm:text-left">
       <h2
         class="text-3xl font-bold text-gray-900 sm:text-4xl xl:text-5xl font-pj"
@@ -41,253 +41,8 @@
     </div>
 
     <div
-      class="grid grid-cols-1 px-12 mt-8 text-center sm:text-left sm:px-0 gap-x-12 gap-y-16 lg:mt-16 sm:grid-cols-2 lg:grid-cols-4"
+      class="grid grid-cols-1 px-12 mt-8 sm:text-left sm:px-0 gap-x-12 gap-y-16 lg:mt-16 sm:grid-cols-2 lg:grid-cols-3"
     >
-      <div class="flex flex-col" *ngIf="displayItem(0)">
-        <div
-          *ngIf="subscriptionInterval != 'mo'"
-          class="self-end flex mb-4 items-center w-fit font-medium text-white p-1 px-4 justify-center rounded-l-xl rounded-r-xl bg-gray-500"
-          style="
-            background: linear-gradient(
-              92.78deg,
-              #ff1f9a 6.35%,
-              #ff7527 98.76%
-            );
-          "
-        >
-          SAVE ${{ items[0].originalPrice * 12 * discount | currencyFormat }}
-        </div>
-        <h3 class="text-lg font-bold text-gray-900 font-pj">Startup</h3>
-        <p class="mt-3 text-sm font-normal text-gray-600 font-pj">
-          Best for small business owners who needs website for business.
-        </p>
-        <div class="flex items-end justify-center mt-6 sm:justify-start">
-          <p class="text-5xl font-bold text-gray-900 font-pj">
-            ${{ items[0].price | currencyFormat }}
-          </p>
-          <p class="text-lg font-medium text-gray-400 font-pj">
-            /{{ subscriptionInterval }}
-          </p>
-        </div>
-
-        <svg
-          class="w-auto h-4 mx-auto mt-8 text-gray-300 sm:mx-0"
-          viewBox="0 0 172 16"
-          fill="none"
-          stroke="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 11 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 46 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 81 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 116 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 151 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 18 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 53 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 88 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 123 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 158 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 25 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 60 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 95 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 130 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 165 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 32 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 67 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 102 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 137 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 172 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 39 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 74 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 109 1)"
-          />
-          <line
-            y1="-0.5"
-            x2="18.0278"
-            y2="-0.5"
-            transform="matrix(-0.5547 0.83205 0.83205 0.5547 144 1)"
-          />
-        </svg>
-
-        <ul class="mt-6 space-y-3 text-base font-medium text-gray-900">
-          <li class="flex items-center">
-            <svg
-              class="w-5 h-5 mr-2.5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            Up to 10 members
-          </li>
-
-          <li class="flex items-center">
-            <svg
-              class="w-5 h-5 mr-2.5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            One admin account
-          </li>
-
-          <li class="flex items-center">
-            <svg
-              class="w-5 h-5 mr-2.5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            5GB Storage
-          </li>
-        </ul>
-
-        <a
-          (click)="onBuy(0)"
-          class="w-full inline-flex items-center justify-center px-4 py-3 mt-10 text-base font-bold text-gray-900 transition-all duration-200 bg-transparent border border-gray-400 rounded font-pj hover:bg-gray-900 hover:text-white focus:bg-gray-900 focus:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
-          role="button"
-        >
-          {{ getCTA(0) }}
-        </a>
-      </div>
-
       <div class="flex flex-col" *ngIf="displayItem(1)">
         <div
           *ngIf="subscriptionInterval != 'mo'"
@@ -302,9 +57,11 @@
         >
           SAVE ${{ items[1].originalPrice * 12 * discount | currencyFormat }}
         </div>
-        <h3 class="text-lg font-bold text-gray-900 font-pj">Pro</h3>
+        <h3 class="text-lg font-bold text-gray-900 font-pj">
+          {{ items[1].itemTitle }}
+        </h3>
         <p class="mt-3 text-sm font-normal text-gray-600 font-pj">
-          Best for small business owners who needs website for business.
+          {{ items[1].itemDescription }}
         </p>
         <div class="flex items-end justify-center mt-6 sm:justify-start">
           <p class="text-5xl font-bold text-gray-900 font-pj">
@@ -484,7 +241,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Unlimited members
+            5 Members
           </li>
 
           <li class="flex items-center">
@@ -502,7 +259,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Unlimited admin accounts
+            10 GB Cloud Storage
           </li>
 
           <li class="flex items-center">
@@ -520,7 +277,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            500 GB Storage
+            Collaboration and Negotiation Tools
           </li>
 
           <li class="flex items-center">
@@ -538,7 +295,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Custom domain
+            Amendment Management
           </li>
 
           <li class="flex items-center">
@@ -556,7 +313,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            API access
+            50 e-signatures per month
           </li>
         </ul>
 
@@ -583,9 +340,11 @@
         >
           SAVE ${{ items[2].originalPrice * 12 * discount | currencyFormat }}
         </div>
-        <h3 class="text-lg font-bold text-gray-900 font-pj">Company</h3>
+        <h3 class="text-lg font-bold text-gray-900 font-pj">
+          {{ items[2].itemTitle }}
+        </h3>
         <p class="mt-3 text-sm font-normal text-gray-600 font-pj">
-          Best for small business owners who needes website for business.
+          {{ items[2].itemDescription }}
         </p>
         <div class="flex items-end justify-center mt-6 sm:justify-start">
           <p class="text-5xl font-bold text-gray-900 font-pj">
@@ -765,7 +524,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Unlimited members
+            20 Members
           </li>
 
           <li class="flex items-center">
@@ -783,7 +542,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Unlimited admin accounts
+            50 GB Cloud Storage
           </li>
 
           <li class="flex items-center">
@@ -801,7 +560,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            1 TB Storage
+            Compliance Reminders
           </li>
 
           <li class="flex items-center">
@@ -819,7 +578,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Custom domain
+            AI-driven Agreement Insights
           </li>
 
           <li class="flex items-center">
@@ -837,7 +596,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            API access
+            250 e-signatures per month
           </li>
 
           <li class="flex items-center">
@@ -855,7 +614,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Access to all integrations
+            Customizable Agreement Branding
           </li>
 
           <li class="flex items-center">
@@ -873,7 +632,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Access to all widgets
+            AI-driven Contract Summaries
           </li>
         </ul>
 
@@ -916,9 +675,11 @@
         >
           SAVE ${{ items[3].originalPrice * 12 * discount | currencyFormat }}
         </div>
-        <h3 class="text-lg font-bold text-gray-900 font-pj">Enterprise</h3>
+        <h3 class="text-lg font-bold text-gray-900 font-pj">
+          {{ items[3].itemTitle }}
+        </h3>
         <p class="mt-3 text-sm font-normal text-gray-600 font-pj">
-          Best for small business owners who needes website for business.
+          {{ items[3].itemDescription }}
         </p>
         <div class="flex items-end justify-center mt-6 sm:justify-start">
           <p class="text-5xl font-bold text-gray-900 font-pj">
@@ -1098,7 +859,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Unlimited members
+            Unlimited Members
           </li>
 
           <li class="flex items-center">
@@ -1116,7 +877,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Unlimited admin accounts
+            Unlimited Teams
           </li>
 
           <li class="flex items-center">
@@ -1134,7 +895,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Up to 5 TB Storage
+            100 GB Cloud Storage
           </li>
 
           <li class="flex items-center">
@@ -1152,7 +913,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Custom domain
+            AI Assistant Access
           </li>
 
           <li class="flex items-center">
@@ -1170,7 +931,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            API access
+            Batch Sending and Processing
           </li>
 
           <li class="flex items-center">
@@ -1188,7 +949,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Access to all integrations
+            Unlimited e-signatures
           </li>
 
           <li class="flex items-center">
@@ -1206,7 +967,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Access to all widgets
+            Custom Template Creation
           </li>
 
           <li class="flex items-center">
@@ -1224,7 +985,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Live chat support
+            Contract Digitization and Migration
           </li>
 
           <li class="flex items-center">
@@ -1242,7 +1003,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Bulk importer
+            24/7 Live Chat Support
           </li>
         </ul>
 

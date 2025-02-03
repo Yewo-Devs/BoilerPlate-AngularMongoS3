@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using API.Core.Models.Purchases;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Caching.Memory;
+using static API.Core.Models.Enums;
 
 namespace API.Application.Attributes
 {
@@ -42,8 +43,10 @@ namespace API.Application.Attributes
 
 			if (!_cache.TryGetValue(userId, out Subscription subscription))
 			{
-				subscription = await _mongoDatabaseService
-					.GetInstanceOfType<Subscription>(Core.Models.Enums.DataNodes.Subscription, userId);
+				var subscriptions = await _mongoDatabaseService
+					.GetCollectionOfType<Subscription>(DataNodes.Subscription);
+
+				subscription = subscriptions.FirstOrDefault(sub => sub.MemberIds.Contains(userId));
 
 				if (subscription != null)
 				{

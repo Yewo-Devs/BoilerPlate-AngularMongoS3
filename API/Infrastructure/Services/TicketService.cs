@@ -57,7 +57,7 @@ namespace API.Infrastructure.Services
 
 			ticket.CreatedDate = DateTime.UtcNow;
 			ticket.Archived = false;
-			ticket.ID = DateTime.UtcNow.Ticks.ToString();
+			ticket.ID = Guid.NewGuid().ToString();
 
 			await _mongoDatabaseService.StoreData(DataNodes.Ticket, ticket, ticket.ID);
 

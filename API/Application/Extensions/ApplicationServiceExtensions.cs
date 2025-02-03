@@ -1,5 +1,6 @@
 ﻿using API.Application.Interfaces;
 using API.Infrastructure.Services;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace API.Application.Extensions
 {
@@ -7,7 +8,8 @@ namespace API.Application.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddScoped<ISchedulerService, SchedulerService>();
+			services.AddMemoryCache();
+			services.AddScoped<ISchedulerService, SchedulerService>();
 			services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<INotificationService, NotificationService>();
 			services.AddScoped<IEmailService, EmailService>();

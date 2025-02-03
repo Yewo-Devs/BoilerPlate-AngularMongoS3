@@ -35,7 +35,7 @@ export class PricingComponent implements OnInit {
     },
     {
       customerId: '',
-      itemTitle: 'Pro',
+      itemTitle: 'Company',
       itemDescription:
         'Amet minim mollit non deserunt ullam co est sit aliqua dolor do amet int. Velit officia consequat duis enim velit mollit.',
       currency: 'USD',
@@ -45,12 +45,12 @@ export class PricingComponent implements OnInit {
       numberOfUsers: 0,
       paymentType: PaymentTypes.Subscription,
       subscriptionInterval: 'month',
-      freeTrial: false,
-      freeTrialPeriodDays: 0,
+      freeTrial: true,
+      freeTrialPeriodDays: 30,
     },
     {
       customerId: '',
-      itemTitle: 'Company',
+      itemTitle: 'Pro',
       itemDescription:
         'Amet minim mollit non deserunt ullam co est sit aliqua dolor do amet int. Velit officia consequat duis enim velit mollit.',
       currency: 'USD',
@@ -67,7 +67,7 @@ export class PricingComponent implements OnInit {
       customerId: '',
       itemTitle: 'Enterprise',
       itemDescription:
-        'Amet minim mollit non deserunt ullam co est sit aliqua dolor do amet int. Velit officia consequat duis enim velit mollit.',
+        'Amet minim mollit non deserunt ullam co est sit aliqua dolor do amet int. Velit officia consequat duis enim velit mollit..',
       currency: 'USD',
       originalPrice: 499,
       price: 499,
@@ -96,9 +96,16 @@ export class PricingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.toggleSwitch();
+
     this.route.queryParams.subscribe((params) => {
       const itemIndex = params['itemIndex'];
+      const interval = params['interval'];
       if (itemIndex) {
+        if (interval != this.subscriptionInterval) {
+          this.toggleSwitch();
+        }
+
         this.onBuy(itemIndex);
       }
     });
@@ -183,11 +190,15 @@ export class PricingComponent implements OnInit {
     let prefs = this.preferencesService.getPreferences();
 
     if (!prefs.user) {
-      prefs.nextPage = '/pricing?itemIndex=' + itemIndex;
+      prefs.nextPage =
+        '/pricing?itemIndex=' +
+        itemIndex +
+        '&interval=' +
+        this.subscriptionInterval;
 
       this.preferencesService.setPreferences(prefs);
 
-      this.router.navigateByUrl('/sign-in');
+      this.router.navigateByUrl('/sign-up');
     }
 
     let item = this.items[itemIndex];
